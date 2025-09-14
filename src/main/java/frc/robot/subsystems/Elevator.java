@@ -44,6 +44,7 @@ public class Elevator extends SubsystemBase {
     config.softLimit.forwardSoftLimit(0); // TODO: Find the Forward soft limit
     config.softLimit.reverseSoftLimitEnabled(false);
     config.softLimit.reverseSoftLimit(0); // TODO: Find the Reverse soft limit
+    config.idleMode(SparkMaxConfig.IdleMode.kBrake);
 
     config.closedLoop.pid(0, 0, 0, ClosedLoopSlot.kSlot0); // TODO: Find PID values
 
