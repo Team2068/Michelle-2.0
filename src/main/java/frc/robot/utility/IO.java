@@ -6,8 +6,8 @@ import frc.robot.subsystems.*;
 
 public class IO extends SubsystemBase {
         public final Swerve chassis = new Swerve();
-        public final Elevator elevator = new Elevator();
-        public final Shooter shooter = new Shooter();
+        // public final Elevator elevator = new Elevator();
+        // public final Shooter shooter = new Shooter();
 
         public IO() {
            DriverStation.silenceJoystickConnectionWarning(true);

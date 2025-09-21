@@ -78,8 +78,8 @@ public class AutomatedController {
         controller.povLeft().and( manual() ).onTrue(Util.Do(io.chassis::syncEncoders));
         controller.povRight().and( manual() ).and(() -> {return !io.chassis.active;}).onTrue(new InstantCommand(io.chassis::zeroAbsolute));
 
-        controller.leftBumper().and( manual()).onTrue(Util.Do(() -> io.elevator.voltage(1), io.elevator)).onFalse(Util.Do(io.elevator::stop, io.elevator));
-        controller.leftBumper().and( manual()).onTrue(Util.Do(() -> io.elevator.voltage(-1), io.elevator)).onFalse(Util.Do(io.elevator::stop, io.elevator));
+        // controller.leftBumper().and( manual()).onTrue(Util.Do(() -> io.elevator.voltage(1), io.elevator)).onFalse(Util.Do(io.elevator::stop, io.elevator));
+        // controller.leftBumper().and( manual()).onTrue(Util.Do(() -> io.elevator.voltage(-1), io.elevator)).onFalse(Util.Do(io.elevator::stop, io.elevator));
     }
 
     void configureCharacterisaton(){
