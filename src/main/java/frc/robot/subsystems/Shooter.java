@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
@@ -65,6 +66,10 @@ public class Shooter extends SubsystemBase {
 
   public void stopPivot() {
     pivot.stopMotor();
+  }
+
+  public void setPosition(double position){
+    shooter.getClosedLoopController().setReference(position, ControlType.kPosition);
   }
 
   @Override
