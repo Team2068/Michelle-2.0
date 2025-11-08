@@ -4,13 +4,10 @@ import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.pathplanner.lib.config.RobotConfig;
-import com.reduxrobotics.sensors.canandmag.Canandmag;
-import com.reduxrobotics.sensors.canandmag.CanandmagSettings;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 
 import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import java.io.IOException;
 
@@ -103,34 +100,6 @@ public class Swerve {
 
         public AngularVelocity velocity(){
             return encoder.getVelocity().getValue();
-        }
-    }
-
-    public static class Canand implements Encoder {
-        Canandmag encoder;
-
-        public Canand(int id) {
-            encoder = new Canandmag(id);
-            CanandmagSettings settings = new CanandmagSettings();
-            settings.setInvertDirection(true);
-            encoder.clearStickyFaults();
-            encoder.setSettings(settings);
-        }
-
-        public void zero() {
-            encoder.setAbsPosition(0, 250);
-        }
-
-        public boolean connected(){
-            return encoder.isConnected();
-        }
-
-        public double angle() {
-            return (encoder.getAbsPosition() * PI2) % PI2;
-        }
-
-        public AngularVelocity velocity(){
-            return RadiansPerSecond.of(encoder.getVelocity());
         }
     }
 }

@@ -6,10 +6,10 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
 
@@ -23,11 +23,11 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-
 public class Module {
     public final TalonFX drive;
     public final SparkMax steer;
-    public final Swerve.Encoder encoder;
+    public final SparkAbsoluteEncoder encoder;
+    public final SparkMaxConfig steerConfig;
 
     double desiredAngle;
 
@@ -37,9 +37,9 @@ public class Module {
     public Module(ShuffleboardLayout tab, int driveID, int steerID, int encoderID, boolean heliumEncoder) {
         drive = new TalonFX(driveID, "rio");
         steer = new SparkMax(steerID, MotorType.kBrushless);
-        encoder = (heliumEncoder) ? new Swerve.Canand(encoderID) : new Swerve.Cancoder(encoderID);
+        encoder = steer.getAbsoluteEncoder();
 
-        SparkMaxConfig steerConfig = new SparkMaxConfig();
+        steerConfig = new SparkMaxConfig();
 
         steerConfig
                 .smartCurrentLimit(20)
@@ -56,8 +56,14 @@ public class Module {
                 // .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                 .pid(0.2, 0.0, 0.0);
 
-                steerConfig.signals.primaryEncoderPositionAlwaysOn(false);
-                steerConfig.signals.primaryEncoderPositionPeriodMs(10); // Test how changing period affects swerve
+        steerConfig.closedLoop.positionWrappingInputRange(0, 1);
+        steerConfig.closedLoop.positionWrappingEnabled(true);
+        steerConfig.signals.primaryEncoderPositionAlwaysOn(false);
+        steerConfig.signals.primaryEncoderPositionPeriodMs(10); // Test how changing period affects swerve
+        steerConfig.signals.absoluteEncoderPositionPeriodMs(10);
+        steerConfig.signals.absoluteEncoderVelocityPeriodMs(10);
+
+        steerConfig.absoluteEncoder.averageDepth(8);
 
         TalonFXConfiguration config = new TalonFXConfiguration();
 
@@ -66,7 +72,7 @@ public class Module {
 
         config.CurrentLimits.SupplyCurrentLimit = 20;
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
-        
+
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -80,7 +86,7 @@ public class Module {
         tab.addDouble("Current Angle", () -> Math.toDegrees(steer.getEncoder().getPosition()));
         tab.addDouble("Angle Difference", () -> Math.toDegrees(angle() - steer.getEncoder().getPosition()));
         tab.addDouble("Target Angle", () -> Math.toDegrees(desiredAngle));
-        tab.addBoolean("Active", encoder::connected);
+        // tab.addBoolean("Active", encoder::connected);
     }
 
     public void resetDrivePosition() {
@@ -88,11 +94,12 @@ public class Module {
     }
 
     public void syncEncoders() {
-        steer.getEncoder().setPosition(encoder.angle());
+        steer.getEncoder().setPosition(angle());
     }
 
     public void zeroAbsolute() {
-        encoder.zero();
+        steerConfig.absoluteEncoder.zeroOffset(angle());
+        steer.configure(steerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     public double drivePosition() {
@@ -103,19 +110,19 @@ public class Module {
         return MetersPerSecond.of(drive.getVelocity().getValueAsDouble() * Swerve.PI2 * .632 * WHEEL_DIAMETER);
     }
 
-    public Voltage voltage(){
+    public Voltage voltage() {
         return drive.getMotorVoltage().getValue();
     }
 
     public double angle() {
-        return encoder.angle();
+        return encoder.getPosition();
     }
 
-    public AngularVelocity steerVelocity(){
-        return encoder.velocity();
+    public double steerVelocity() {
+        return encoder.getVelocity();
     }
 
-    public Voltage steerVoltage(){
+    public Voltage steerVoltage() {
         return Volts.of(steer.getBusVoltage());
     }
 
@@ -131,7 +138,7 @@ public class Module {
         steer.getClosedLoopController().setReference(targetAngle, ControlType.kPosition);
     }
 
-    public void setSteer(double steerVolts){
+    public void setSteer(double steerVolts) {
         syncEncoders();
         drive.set(0);
         steer.set(steerVolts);
