@@ -78,7 +78,6 @@ public class Swerve extends SubsystemBase {
                             .withPosition(i * 2, 0),
                     Constants.CHASSIS_ID[i],
                     Constants.CHASSIS_ID[i],
-                    Constants.ENCODER_ID[i],
                     constants.heliumEncoders);
         }
 

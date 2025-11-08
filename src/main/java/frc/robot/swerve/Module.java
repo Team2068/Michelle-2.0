@@ -34,7 +34,7 @@ public class Module {
     public static final double WHEEL_DIAMETER = Units.inchesToMeters(4);
     public static final double STEER_REDUCTION = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
 
-    public Module(ShuffleboardLayout tab, int driveID, int steerID, int encoderID, boolean heliumEncoder) {
+    public Module(ShuffleboardLayout tab, int driveID, int steerID, boolean heliumEncoder) {
         drive = new TalonFX(driveID, "rio");
         steer = new SparkMax(steerID, MotorType.kBrushless);
         encoder = steer.getAbsoluteEncoder();
