@@ -86,7 +86,6 @@ public class Module {
         tab.addDouble("Current Angle", () -> Math.toDegrees(steer.getEncoder().getPosition()));
         tab.addDouble("Angle Difference", () -> Math.toDegrees(angle() - steer.getEncoder().getPosition()));
         tab.addDouble("Target Angle", () -> Math.toDegrees(desiredAngle));
-        // tab.addBoolean("Active", encoder::connected);
     }
 
     public void resetDrivePosition() {
@@ -115,7 +114,7 @@ public class Module {
     }
 
     public double angle() {
-        return encoder.getPosition();
+        return encoder.getPosition() * 2 * Math.PI;
     }
 
     public double steerVelocity() {
