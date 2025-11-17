@@ -9,7 +9,6 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkMax;
 
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
 
@@ -27,14 +26,11 @@ public class Module {
     public final TalonFX drive;
     public final SparkMax steer;
     public final SparkAbsoluteEncoder encoder;
-    public final SparkMaxConfig steerConfig;
+    public SparkMaxConfig steerConfig;
 
-    double desiredAngle;
-
-    public static final double WHEEL_DIAMETER = Units.inchesToMeters(4);
     public static final double STEER_REDUCTION = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
 
-    public Module(ShuffleboardLayout tab, int driveID, int steerID, boolean heliumEncoder) {
+    public Module(ShuffleboardLayout tab, int driveID, int steerID) {
         drive = new TalonFX(driveID, "rio");
         steer = new SparkMax(steerID, MotorType.kBrushless);
         encoder = steer.getAbsoluteEncoder();
@@ -52,18 +48,18 @@ public class Module {
 
         steerConfig.closedLoop
                 .positionWrappingEnabled(true)
-                .positionWrappingMaxInput(Swerve.PI2)
+                .positionWrappingMaxInput(SwerveConfig.PI2)
                 // .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                 .pid(0.2, 0.0, 0.0);
 
+        steerConfig.absoluteEncoder.averageDepth(64);
+        steerConfig.absoluteEncoder.inverted(true);
         steerConfig.closedLoop.positionWrappingInputRange(0, 1);
         steerConfig.closedLoop.positionWrappingEnabled(true);
         steerConfig.signals.primaryEncoderPositionAlwaysOn(false);
         steerConfig.signals.primaryEncoderPositionPeriodMs(10); // Test how changing period affects swerve
         steerConfig.signals.absoluteEncoderPositionPeriodMs(10);
         steerConfig.signals.absoluteEncoderVelocityPeriodMs(10);
-
-        steerConfig.absoluteEncoder.averageDepth(8);
 
         TalonFXConfiguration config = new TalonFXConfiguration();
 
@@ -85,7 +81,6 @@ public class Module {
         tab.addDouble("Absolute Angle", () -> Math.toDegrees(angle()));
         tab.addDouble("Current Angle", () -> Math.toDegrees(steer.getEncoder().getPosition()));
         tab.addDouble("Angle Difference", () -> Math.toDegrees(angle() - steer.getEncoder().getPosition()));
-        tab.addDouble("Target Angle", () -> Math.toDegrees(desiredAngle));
     }
 
     public void resetDrivePosition() {
@@ -102,11 +97,11 @@ public class Module {
     }
 
     public double drivePosition() {
-        return drive.getPosition().getValueAsDouble() * .632 * WHEEL_DIAMETER;
+        return drive.getPosition().getValueAsDouble() * .632 * SwerveConfig.Constants.WHEEL_DIAMETER;
     }
 
     public LinearVelocity velocity() {
-        return MetersPerSecond.of(drive.getVelocity().getValueAsDouble() * Swerve.PI2 * .632 * WHEEL_DIAMETER);
+        return MetersPerSecond.of(drive.getVelocity().getValueAsDouble() * SwerveConfig.PI2 * .632 * SwerveConfig.Constants.WHEEL_DIAMETER);
     }
 
     public Voltage voltage() {
@@ -114,7 +109,7 @@ public class Module {
     }
 
     public double angle() {
-        return encoder.getPosition() * 2 * Math.PI;
+        return (encoder.getPosition() * SwerveConfig.PI2) % SwerveConfig.PI2;
     }
 
     public double steerVelocity() {

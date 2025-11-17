@@ -34,7 +34,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.swerve.Module;
-import frc.robot.swerve.Swerve.Constants;
+import frc.robot.swerve.SwerveConfig.Constants;
 import frc.robot.utility.LimelightHelpers;
 import frc.robot.utility.Util;
 
@@ -77,8 +77,7 @@ public class Swerve extends SubsystemBase {
                             .withSize(2, 4)
                             .withPosition(i * 2, 0),
                     Constants.CHASSIS_ID[i],
-                    Constants.CHASSIS_ID[i],
-                    constants.heliumEncoders);
+                    Constants.CHASSIS_ID[i]);
         }
 
         odometry = new SwerveDriveOdometry(kinematics, rotation(), modulePositions(),
