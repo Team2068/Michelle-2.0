@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.commands.DefaultDrive;
-import frc.robot.swerve.Swerve;
+import frc.robot.swerve.SwerveConfig;
 import frc.robot.utility.AutomatedController;
 import frc.robot.utility.IO;
 import frc.robot.utility.Util;
@@ -48,7 +48,7 @@ public class RobotContainer {
     driver_selector.addOption("Jason", 2);
     driver_selector.addOption("Uriel", 3);
     driver_selector.addOption("Debug", 4);
-    driver_selector.onChange( (driver) -> Swerve.Constants.SwitchDriver(driver));
+    driver_selector.onChange( (driver) -> SwerveConfig.Constants.SwitchDriver(driver));
 
     SignalLogger.setPath("/media/sda1/ctre-logs/");
   }
