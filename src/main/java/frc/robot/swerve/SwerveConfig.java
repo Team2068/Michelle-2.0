@@ -21,7 +21,7 @@ public class SwerveConfig {
 
         // DRIVER SETTINGS
         public static int driver = 0;
-        public static double transFactor = 1.0;
+        public static double transFactor = 0.8;
         public static double rotFactor = .30;
 
         // AUTON CONSTANTS
@@ -50,7 +50,7 @@ public class SwerveConfig {
         public static void SwitchDriver(int driver){
             switch (driver) {                
                 default:
-                transFactor = 1.0;
+                transFactor = 0.8;
                 rotFactor = .5;
                     break;
             }

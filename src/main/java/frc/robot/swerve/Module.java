@@ -5,6 +5,7 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkMax;
@@ -40,7 +41,7 @@ public class Module {
         steerConfig
                 .smartCurrentLimit(20)
                 .idleMode(IdleMode.kBrake)
-                .inverted(true);
+                .inverted(false);
 
         steerConfig.encoder
                 .positionConversionFactor(Math.PI * STEER_REDUCTION)
@@ -52,14 +53,14 @@ public class Module {
                 // .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                 .pid(0.2, 0.0, 0.0);
 
-        steerConfig.absoluteEncoder.averageDepth(64);
-        steerConfig.absoluteEncoder.inverted(true);
+        steerConfig.absoluteEncoder.averageDepth(8);
+        steerConfig.absoluteEncoder.inverted(false);
         steerConfig.closedLoop.positionWrappingInputRange(0, 1);
         steerConfig.closedLoop.positionWrappingEnabled(true);
         steerConfig.signals.primaryEncoderPositionAlwaysOn(false);
-        steerConfig.signals.primaryEncoderPositionPeriodMs(10); // Test how changing period affects swerve
-        steerConfig.signals.absoluteEncoderPositionPeriodMs(10);
-        steerConfig.signals.absoluteEncoderVelocityPeriodMs(10);
+        steerConfig.signals.primaryEncoderPositionPeriodMs(20); // Test how changing period affects swerve
+        steerConfig.signals.absoluteEncoderPositionPeriodMs(20);
+        steerConfig.signals.absoluteEncoderVelocityPeriodMs(20);
 
         TalonFXConfiguration config = new TalonFXConfiguration();
 
@@ -74,7 +75,7 @@ public class Module {
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         steer.configure(steerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        steer.getEncoder().setPosition(angle());
+        syncEncoders();
 
         drive.getConfigurator().apply(config);
 
@@ -134,6 +135,7 @@ public class Module {
 
     public void setSteer(double steerVolts) {
         syncEncoders();
+
         drive.set(0);
         steer.set(steerVolts);
     }
