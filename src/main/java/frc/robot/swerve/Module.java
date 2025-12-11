@@ -5,6 +5,7 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkMax;
@@ -16,6 +17,7 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import frc.robot.subsystems.Swerve;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -48,14 +50,20 @@ public class Module {
 
         steerConfig.closedLoop
                 .positionWrappingEnabled(true)
-                .positionWrappingMaxInput(SwerveConfig.PI2)
-                // .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                .positionWrappingInputRange(0, SwerveConfig.PI2)
+                .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+                .outputRange(-1, 1)
                 .pid(0.2, 0.0, 0.0);
 
         steerConfig.absoluteEncoder.averageDepth(64);
         steerConfig.absoluteEncoder.inverted(true);
-        steerConfig.closedLoop.positionWrappingInputRange(0, 1);
-        steerConfig.closedLoop.positionWrappingEnabled(true);
+        
+        steerConfig.absoluteEncoder
+                .averageDepth(64)
+                .positionConversionFactor(SwerveConfig.PI2)
+                .velocityConversionFactor(SwerveConfig.PI2 / 60.0)
+                .inverted(true);
+
         steerConfig.signals.primaryEncoderPositionAlwaysOn(false);
         steerConfig.signals.primaryEncoderPositionPeriodMs(10); // Test how changing period affects swerve
         steerConfig.signals.absoluteEncoderPositionPeriodMs(10);
