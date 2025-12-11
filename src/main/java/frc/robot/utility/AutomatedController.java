@@ -2,6 +2,7 @@ package frc.robot.utility;
 
 import java.util.function.BooleanSupplier;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -77,7 +78,6 @@ public class AutomatedController {
         controller.povDown().and( manual() ).onTrue(Util.Do(io.chassis::toggle));
         controller.povLeft().and( manual() ).onTrue(Util.Do(io.chassis::syncEncoders));
         controller.povRight().and( manual() ).and(() -> {return !io.chassis.active;}).onTrue(new InstantCommand(io.chassis::zeroAbsolute));
-
         // controller.leftBumper().and( manual()).onTrue(Util.Do(() -> io.elevator.voltage(1), io.elevator)).onFalse(Util.Do(io.elevator::stop, io.elevator));
         // controller.leftBumper().and( manual()).onTrue(Util.Do(() -> io.elevator.voltage(-1), io.elevator)).onFalse(Util.Do(io.elevator::stop, io.elevator));
     }
@@ -97,5 +97,7 @@ public class AutomatedController {
     void configureDebug(){
         controller.back().and(debug()).onTrue(Util.Do(io.chassis::resetOdometry, io.chassis));
     }
+
+    
 
 }

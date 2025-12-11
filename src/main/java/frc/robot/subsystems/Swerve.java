@@ -194,6 +194,10 @@ public class Swerve extends SubsystemBase {
         return state;
     }
 
+    public void setChassisSpeeds(ChassisSpeeds speeds){
+        this.speeds = speeds;
+    }
+
     final MutDistance[] distance = { Meters.mutable(0), Meters.mutable(0), Meters.mutable(0), Meters.mutable(0) };
     final MutAngle[] angle = { Radians.mutable(0), Radians.mutable(0), Radians.mutable(0), Radians.mutable(0) };
 

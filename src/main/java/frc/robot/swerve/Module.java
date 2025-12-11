@@ -41,7 +41,7 @@ public class Module {
         steerConfig
                 .smartCurrentLimit(20)
                 .idleMode(IdleMode.kBrake)
-                .inverted(true);
+                .inverted(false);
 
         steerConfig.encoder
                 .positionConversionFactor(Math.PI * STEER_REDUCTION)
@@ -53,9 +53,6 @@ public class Module {
                 .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
                 .outputRange(-1, 1)
                 .pid(0.2, 0.0, 0.0);
-
-        steerConfig.absoluteEncoder.averageDepth(64);
-        steerConfig.absoluteEncoder.inverted(true);
         
         steerConfig.absoluteEncoder
                 .averageDepth(64)
@@ -64,9 +61,9 @@ public class Module {
                 .inverted(true);
 
         steerConfig.signals.primaryEncoderPositionAlwaysOn(false);
-        steerConfig.signals.primaryEncoderPositionPeriodMs(10); // Test how changing period affects swerve
-        steerConfig.signals.absoluteEncoderPositionPeriodMs(10);
-        steerConfig.signals.absoluteEncoderVelocityPeriodMs(10);
+        steerConfig.signals.primaryEncoderPositionPeriodMs(20); // Test how changing period affects swerve
+        steerConfig.signals.absoluteEncoderPositionPeriodMs(20);
+        steerConfig.signals.absoluteEncoderVelocityPeriodMs(20);
 
         TalonFXConfiguration config = new TalonFXConfiguration();
 
@@ -81,7 +78,7 @@ public class Module {
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         steer.configure(steerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        steer.getEncoder().setPosition(angle());
+        syncEncoders();
 
         drive.getConfigurator().apply(config);
 
@@ -141,6 +138,7 @@ public class Module {
 
     public void setSteer(double steerVolts) {
         syncEncoders();
+
         drive.set(0);
         steer.set(steerVolts);
     }
