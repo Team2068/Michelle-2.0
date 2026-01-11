@@ -3,7 +3,8 @@ package frc.robot.commands;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.swerve.SwerveConfig;
+import frc.robot.swerve.Swerve;
+import frc.robot.swerve.Swerve.Constants;
 import frc.robot.utility.IO;
 
 import java.util.function.DoubleSupplier;
@@ -21,9 +22,9 @@ public class DefaultDrive extends Command {
     }
 
     public DefaultDrive(IO io, CommandXboxController controller) {
-        this(io, () -> -modifyAxis(controller.getLeftY()) * SwerveConfig.Constants.MAX_VELOCITY,
-        () -> -modifyAxis(controller.getLeftX()) * SwerveConfig.Constants.MAX_VELOCITY,
-        () -> -modifyAxis(controller.getRightX()) * SwerveConfig.Constants.MAX_ANGULAR_VELOCITY);
+        this(io, () -> -modifyAxis(controller.getLeftY()) * Swerve.Constants.MAX_VELOCITY,
+        () -> -modifyAxis(controller.getLeftX()) * Swerve.Constants.MAX_VELOCITY,
+        () -> -modifyAxis(controller.getRightX()) * Swerve.Constants.MAX_ANGULAR_VELOCITY);
         this.controller = controller;
     }
   
@@ -43,10 +44,10 @@ public class DefaultDrive extends Command {
     @Override
     public void execute() {
         double down_scale = 1.25 - modifyAxis(controller.getLeftTriggerAxis());
-        double up_scale = (SwerveConfig.Constants.MAX_VELOCITY * .2) * modifyAxis(controller.getRightTriggerAxis());
+        double up_scale = (Swerve.Constants.MAX_VELOCITY * .2) * modifyAxis(controller.getRightTriggerAxis());
 
-        double scale = SwerveConfig.Constants.transFactor * down_scale + up_scale;
-        double rot_scale = SwerveConfig.Constants.rotFactor * down_scale;
+        double scale = Constants.transFactor * down_scale + up_scale;
+        double rot_scale = Constants.rotFactor * down_scale;
 
         double xSpeed = x_supplier.getAsDouble() * scale;
         double ySpeed = y_supplier.getAsDouble() * scale;
